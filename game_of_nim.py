@@ -1,3 +1,4 @@
+
 from games import *
 
 class GameOfNim(Game):
@@ -15,7 +16,7 @@ class GameOfNim(Game):
 
     def result(self, state, move):
         """Return the resulting state after a move."""
-        new_board = state.board[:]
+        new_board = state.board.copy()
         row, count = move
         new_board[row] -= count
         next_player = 'MIN' if state.to_move == 'MAX' else 'MAX'
@@ -28,7 +29,8 @@ class GameOfNim(Game):
 
     def terminal_test(self, state):
         """A state is terminal if there are no objects left."""
-        return all(count == 0 for count in state.board)
+        result = all(count == 0 for count in state.board)
+        return result
 
     def display(self, state):
         board = state.board
@@ -44,8 +46,12 @@ class GameOfNim(Game):
 
     def compute_utility(self, board, player):
         """Compute the utility of the current board state."""
-        if self.terminal_test(self.State(to_move=player, utility=0, board=board, moves=[])):
-            return -1 if player == 'MAX' else 1
+        if self.terminal_test(self.State(to_move=player, utility=0, board=board, moves=[])): #if this is true, 
+            # return -1 if player == 'MAX' else 1
+            if player == 'MAX':
+                return 1
+            else:
+                return -1
         return 0
 
     class State:
@@ -66,7 +72,7 @@ if __name__ == "__main__":
     #new_state = nim.result(nim.initial, (1, 3))
     #nim.display(new_state)
     
-    while not nim.terminal_test(state):
+    while nim.terminal_test(state) == False:
         if state.to_move == 'MAX':
             move = alpha_beta_player(nim, state)
             print(move)
@@ -80,9 +86,9 @@ if __name__ == "__main__":
             nim.display(state)
     
     
-    utility = nim.play_game(alpha_beta_player, query_player)  # computer moves first
+    # utility = nim.play_game(alpha_beta_player, query_player)  # computer moves first
+    utility = nim.compute_utility(state.board,state.to_move)
     if utility < 0:
          print("MIN won the game")
     else:
          print("MAX won the game")
-
